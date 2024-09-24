@@ -11,17 +11,21 @@
  import { ref } from 'vue';
  import getUser from '@/composables/getUser';
 import { serverTimestamp } from 'firebase/firestore'; 
+import useCollection from '@/composables/useCollection';
  export default {
      setup(){
          let message = ref("");
          let { user } = getUser();
-         let handleSubmit = () => {
+         let { error, addDocument }= useCollection("messages");
+
+         let handleSubmit = async() => {
            if (message.value.trim() !== "") { // Check if message is not empty
              let chat = {
                message: message.value,
                name: user.value.displayName,
                created_at: serverTimestamp() // Using serverTimestamp for correct timestamp
              };
+             await addDocument(chat)
              console.log(chat);
              message.value = "";
            }
